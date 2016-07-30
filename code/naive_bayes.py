@@ -10,6 +10,10 @@ class NaiveBayes:
         self.labels = None
 
     def train(self, data):
+        """function that trains a naive bayes model
+           data: (counts, labels)
+               - counts: a list of Counter objects
+               - labels: a list of integers"""
         counts, labels = data
         # obtain frequencies
         label_counter = Counter(labels)
@@ -26,6 +30,7 @@ class NaiveBayes:
 
     @staticmethod
     def _get_likelihood(word_counter, word_totals):
+        """compute p(x|c), probability of a data point given a class"""
         p_x_given_c = defaultdict(lambda: defaultdict(float))
         for label in word_counter:
             for word in word_counter[label]:
@@ -35,6 +40,7 @@ class NaiveBayes:
 
     @staticmethod
     def _get_prior(label_counter):
+        """compute p(c), probability of a class"""
         p_c = defaultdict(float)
         total = sum(label_counter.values())
         for label in label_counter:
@@ -42,6 +48,11 @@ class NaiveBayes:
         return p_c
 
     def predict(self, data):
+        """compute p(c|x), probability of a class given a data point
+           for each data point, and return predictions for each data point
+           data: (counts, labels)
+               - counts: a list of Counter objects
+               - labels: a list of integers"""
         counts, labels = data
         predictions = list()
         for count in counts:
