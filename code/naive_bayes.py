@@ -66,3 +66,12 @@ class NaiveBayes:
             prediction = argmax(probs)
             predictions.append(prediction)
         return predictions
+
+    @staticmethod
+    def report(predictions, gold_labels):
+        correct = 0
+        total = len(predictions)
+        for prediction, label in zip(predictions, gold_labels):
+            if prediction == label:
+                correct += 1
+        print("{0}/{1}: {2}%".format(correct, total, (correct/total) * 100))
