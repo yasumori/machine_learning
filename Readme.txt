@@ -6,6 +6,7 @@ Writing machine learning code for my practice
         implement Gaussian naive Bayes for continuous data
 
 * k_means.py
+  TODO: add visualization of clusters to the demo code
 
 - tests: unit tests for machine learning code
 
