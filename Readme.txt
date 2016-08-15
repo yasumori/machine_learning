@@ -8,6 +8,11 @@ Writing machine learning code for my practice
 * k_means.py
   TODO: add visualization of clusters to the demo code
 
+* linear_regression.py
+  TODO: implement is_converged
+  TODO: add visualisation demo
+  TODO: add tests
+
 - tests: unit tests for machine learning code
 
 - demo: demo for machine learning code
