@@ -2,6 +2,8 @@
 
 from collections import Counter
 from math import exp
+import sys
+sys.path.append('code')
 
 from naive_bayes import NaiveBayes
 

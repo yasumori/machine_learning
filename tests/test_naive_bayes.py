@@ -2,7 +2,9 @@
 
 from collections import Counter, defaultdict
 from math import exp
+import sys
 import unittest
+sys.path.append('code')
 
 from naive_bayes import NaiveBayes
 
