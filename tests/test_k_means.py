@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 from copy import deepcopy
+import sys
 import unittest
+sys.path.append('code')
 
 import numpy as np
 

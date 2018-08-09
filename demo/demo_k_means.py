@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import sys
+sys.path.append('code')
+
 import numpy as np
 
 from k_means import KMeans
