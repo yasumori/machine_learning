@@ -12,12 +12,13 @@ class LinearRegression:
         self.errors = list()
         self._is_univariate = True if n_in == 1 else False
 
-    def train(self, x, y, n_iter=1000, lr=0.01):
+    def train(self, x, y, n_iter=1000, lr=0.01, stopping=0.0001):
         """train a linear regression model with gradient descent
            x: ndarray storing data points of n_in features
            y: ndarray storing labels of x
            n_iter: the number of iterations
            lr: learning rate
+           stopping: stop if margin of ith and i-1th errors is lower than this
         """
         # initial error
         pred = self.predict(x)
@@ -38,10 +39,19 @@ class LinearRegression:
             self.b = self.b - grad_b
 
             pred = self.predict(x)
-            self.errors.append(self._mean_squared_error(pred, y))
+            error = self._mean_squared_error(pred, y)
+            self.errors.append(error)
 
-    def _is_converged(self):
-        pass
+            if self._is_converged(error, stopping):
+                print('Stop training at {} iter'.format(i+1))
+                break
+
+    def _is_converged(self, cur_error, stopping):
+        # error progress too small
+        if self.errors[-2] - cur_error < stopping:
+            return True
+        else:
+            return False
 
     @staticmethod
     def _mean_squared_error(pred, y):
