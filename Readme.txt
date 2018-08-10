@@ -9,7 +9,6 @@ Writing machine learning code for my practice
   TODO: add visualization of clusters to the demo code
 
 * linear_regression.py
-  TODO: add tests
 
 - tests: unit tests for machine learning code
 
