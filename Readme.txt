@@ -10,6 +10,11 @@ Writing machine learning code for my practice
 
 * linear_regression.py
 
+* hidden_markov_model.py
+  TODO: change probabilities to log scale
+        parameters can change to nan very easily otherwise
+  TODO: add demo (something nice like POS tagging on toy data)
+
 - tests: unit tests for machine learning code
 
 - demo: demo for machine learning code
