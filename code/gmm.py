@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import sys
+
 import numpy as np
 
 class MGaussian:
@@ -80,12 +82,20 @@ class GMM:
         self.gaussians = [MGaussian() for i in range(n_components)]
         self.mixture_weights = np.zeros(n_components)
 
-    def compute_log_likelihood(self, data):
+    def compute_probs(self, data):
         res = np.zeros((self.K, len(data)))
-        for i, gaussian in enumerate(self.gaussians):
-            probs = gaussian.compute_log_prob(data)
-            res[i] = probs + np.log(self.mixture_weights[i])
+        for k in range(self.K):
+            probs = self.gaussians[k].compute_prob(data)
+            res[k] = probs * self.mixture_weights[k]
         return res
+
+    def compute_gamma(self, data):
+        probs = self.compute_probs(data)
+        return probs / np.sum(probs, axis=0)
+
+    def compute_log_likelihood(self, data):
+        # Sigma^N Ln { Sigma^K pi_k * Gauss(x_n|mu_k, cov_k) }
+        return np.sum(np.log(np.sum(self.compute_probs(data), axis=0)))
 
     def run_EM(self, data, stop=0.001, init='random'):
         if self.K > len(data):
@@ -95,50 +105,33 @@ class GMM:
         if init == 'random':
             self.random_init(data)
 
-        self.gaussians[0].mean = data[0]
-        self.gaussians[0].compute_covariance(data)
-        self.gaussians[1].mean = data[2]
-        self.gaussians[1].compute_covariance(data)
-
-        print([g.mean for g in self.gaussians])
-        print([g.covariance for g in self.gaussians])
-        L_history = [np.sum(self.compute_log_likelihood(data), axis=1)]
-
+        L_history = [self.compute_log_likelihood(data)]
         i=0
         while True:
             i+=1
-            print(i)
-            #print([g.mean for g in self.gaussians])
-            #print(self.mixture_weights)
             # E-step
-            L = np.exp(self.compute_log_likelihood(data))
-            gamma = L / np.sum(L, axis=0)
+            gamma = self.compute_gamma(data)
             summed_gamma = np.sum(gamma, axis=1)
-
             # M-step
             for k in range(self.K):
                 kth_gaussian = self.gaussians[k]
                 kth_sum = summed_gamma[k]
                 # new mean
                 mu = np.sum((gamma[k][:, np.newaxis] * data), axis=0) / kth_sum
-                print(mu)
                 kth_gaussian.mean = mu
                 # new covariance
                 tmp = (data - mu) ** 2
                 cov = np.sum((gamma[k][:, np.newaxis] * tmp), axis=0) / kth_sum
-                print(cov)
                 kth_gaussian.set_covariance(cov)
-                print(kth_gaussian.det)
-                print(kth_gaussian.inverse)
             # new mixture weight
-            print(self.get_params())
             self.mixture_weights = np.sum(gamma, axis=1) / np.sum(gamma)
-
-            new_L = np.sum(self.compute_log_likelihood(data), axis=1)
-            #TODO: THIS IS WRONG in LOG IT WOULDN'T WORK
-            if i == 5:
-            #if new_L - L_history[-1] <= np.log(stop):
+            new_L = self.compute_log_likelihood(data)
+            if new_L - L_history[-1] <= stop:
                 L_history.append(new_L)
+                break
+            elif np.isnan(new_L):
+                print("Likelihood not computed right. Perhaps, some "
+                        "parameters became 0", file=sys.stderr)
                 break
             else:
                 L_history.append(new_L)
